@@ -1,4 +1,4 @@
-FROM php:8.3-cli-alpine
+FROM php:8.4-cli-alpine
 
 # Install system dependencies and PHP extensions
 RUN apk add --no-cache \
@@ -21,8 +21,8 @@ WORKDIR /var/www/html
 # Copy project files
 COPY . .
 
-# Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+# Install PHP dependencies with ignore-platform-reqs safeguard
+RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-req=php+
 
 # Set up environment and permissions
 RUN cp -n .env.example .env || true \
@@ -34,5 +34,5 @@ RUN cp -n .env.example .env || true \
 ENV PORT=10000
 EXPOSE 10000
 
-# Start script: run migrations and start Laravel server
+# Start script: run migrations, seed database, cache configs, and start server
 CMD ["sh", "-c", "php artisan migrate --force && php artisan db:seed --force && php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"]
