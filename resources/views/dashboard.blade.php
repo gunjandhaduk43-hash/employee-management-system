@@ -12,8 +12,11 @@
         <a href="{{ route('employees.create') }}" class="btn btn-primary me-2">
             <i class="bi bi-person-plus-fill me-1"></i> Add Employee
         </a>
-        <a href="{{ route('departments.create') }}" class="btn btn-outline-primary">
+        <a href="{{ route('departments.create') }}" class="btn btn-outline-primary me-2">
             <i class="bi bi-building-add me-1"></i> Add Department
+        </a>
+        <a href="{{ route('attendances.create') }}" class="btn btn-outline-success">
+            <i class="bi bi-calendar-plus me-1"></i> Mark Attendance
         </a>
     </div>
 </div>
@@ -59,6 +62,109 @@
                     </span>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Today's Attendance Overview Card -->
+<div class="card card-custom mb-4 border-0 shadow-sm">
+    <div class="card-header bg-white border-bottom py-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <div class="d-flex align-items-center">
+            <div class="rounded-circle bg-success-subtle text-success p-2 me-2 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+                <i class="bi bi-calendar-check fs-5"></i>
+            </div>
+            <div>
+                <h5 class="fw-bold mb-0 text-dark">Today's Attendance Overview</h5>
+                <small class="text-muted">{{ \Carbon\Carbon::today()->format('l, F j, Y') }}</small>
+            </div>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{{ route('attendances.index') }}" class="btn btn-sm btn-success fw-semibold">
+                <i class="bi bi-calendar2-check me-1"></i> Mark Attendance
+            </a>
+            <a href="{{ route('attendances.index') }}" class="btn btn-sm btn-outline-primary">
+                View Full Sheet <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+        </div>
+    </div>
+    <div class="card-body p-4">
+        <div class="row g-3 text-center">
+            <div class="col-4 col-md-2">
+                <div class="p-3 rounded-3 border" style="background-color: #f8fafc;">
+                    <div class="text-muted small fw-semibold text-uppercase mb-1" style="font-size: 0.72rem;">
+                        <i class="bi bi-people-fill me-1 text-primary"></i> Total
+                    </div>
+                    <div class="h3 fw-bold text-dark mb-0">{{ $employeeCount }}</div>
+                </div>
+            </div>
+            <div class="col-4 col-md-2">
+                <div class="p-3 rounded-3 bg-success-subtle border border-success-subtle">
+                    <div class="text-success small fw-semibold text-uppercase mb-1" style="font-size: 0.72rem;">
+                        <i class="bi bi-check-circle-fill me-1"></i> Present
+                    </div>
+                    <div class="h3 fw-bold text-success mb-0">{{ $todayAttendance['present'] }}</div>
+                </div>
+            </div>
+            <div class="col-4 col-md-2">
+                <div class="p-3 rounded-3 bg-danger-subtle border border-danger-subtle">
+                    <div class="text-danger small fw-semibold text-uppercase mb-1" style="font-size: 0.72rem;">
+                        <i class="bi bi-x-circle-fill me-1"></i> Absent
+                    </div>
+                    <div class="h3 fw-bold text-danger mb-0">{{ $todayAttendance['absent'] }}</div>
+                </div>
+            </div>
+            <div class="col-4 col-md-2">
+                <div class="p-3 rounded-3 bg-warning-subtle border border-warning-subtle">
+                    <div class="text-warning-emphasis small fw-semibold text-uppercase mb-1" style="font-size: 0.72rem;">
+                        <i class="bi bi-clock-fill me-1"></i> Half Day
+                    </div>
+                    <div class="h3 fw-bold text-warning-emphasis mb-0">{{ $todayAttendance['half_day'] }}</div>
+                </div>
+            </div>
+            <div class="col-4 col-md-2">
+                <div class="p-3 rounded-3 bg-info-subtle border border-info-subtle">
+                    <div class="text-info-emphasis small fw-semibold text-uppercase mb-1" style="font-size: 0.72rem;">
+                        <i class="bi bi-calendar2-range-fill me-1"></i> Leave
+                    </div>
+                    <div class="h3 fw-bold text-info-emphasis mb-0">{{ $todayAttendance['leave'] }}</div>
+                </div>
+            </div>
+            <div class="col-4 col-md-2">
+                <div class="p-3 rounded-3 border" style="background-color: #ffedd5; border-color: #fdba74 !important;">
+                    <div class="text-uppercase mb-1 fw-semibold" style="color: #c2410c; font-size: 0.72rem;">
+                        <i class="bi bi-hourglass-split me-1"></i> Pending
+                    </div>
+                    <div class="h3 fw-bold mb-0" style="color: #c2410c;">{{ $todayAttendance['pending'] }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-3 pt-3 border-top d-flex flex-wrap justify-content-between align-items-center text-muted small">
+            <div>
+                <i class="bi bi-info-circle me-1 text-primary"></i>
+                Total recorded: <strong>{{ $todayAttendance['total'] }}</strong> of <strong>{{ $employeeCount }}</strong> {{ Str::plural('employee', $employeeCount) }}
+                &bull; Remaining to mark: <strong class="text-warning-emphasis">{{ $todayAttendance['pending'] }}</strong>
+            </div>
+            @if ($employeeCount > 0)
+                <div>
+                    Marked Coverage: <strong>{{ round(($todayAttendance['total'] / $employeeCount) * 100) }}%</strong>
+                </div>
+            @endif
+        </div>
+    </div>
+</div>
+
+        <div class="mt-3 pt-3 border-top d-flex flex-wrap justify-content-between align-items-center text-muted small">
+            <div>
+                <i class="bi bi-info-circle me-1 text-primary"></i>
+                Total marked today: <strong>{{ $todayAttendance['total'] }}</strong> of <strong>{{ $employeeCount }}</strong> {{ Str::plural('employee', $employeeCount) }}
+            </div>
+            @if ($employeeCount > 0)
+                <div>
+                    Marked Coverage: <strong>{{ round(($todayAttendance['total'] / $employeeCount) * 100) }}%</strong>
+                </div>
+            @endif
         </div>
     </div>
 </div>

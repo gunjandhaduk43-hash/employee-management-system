@@ -14,7 +14,7 @@
 
         <div class="card card-custom">
             <div class="card-body p-4">
-                <form action="{{ route('employees.store') }}" method="POST">
+                <form action="{{ route('employees.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
 
                     <h5 class="fw-bold text-primary mb-3 pb-2 border-bottom">
@@ -92,6 +92,25 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
+                        </div>
+                    </div>
+
+                    <h5 class="fw-bold text-primary mb-3 pb-2 border-bottom">
+                        <i class="bi bi-camera me-1"></i> Profile Photo
+                    </h5>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label for="profile_image" class="form-label fw-semibold">Employee Photo</label>
+                            <input type="file"
+                                   name="profile_image"
+                                   id="profile_image"
+                                   class="form-control @error('profile_image') is-invalid @enderror"
+                                   accept="image/png, image/jpeg, image/jpg">
+                            <div class="form-text">Accepted formats: JPG, JPEG, PNG (Max: 2MB).</div>
+                            @error('profile_image')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
 

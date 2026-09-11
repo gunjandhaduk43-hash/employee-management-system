@@ -42,6 +42,7 @@ class EmployeeRequest extends FormRequest
             'salary' => ['nullable', 'numeric', 'min:0', 'max:9999999999.99'],
             'designation' => ['nullable', 'string', 'max:255'],
             'department_id' => ['required', 'integer', 'exists:departments,id'],
+            'profile_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
         ];
     }
 
@@ -63,6 +64,9 @@ class EmployeeRequest extends FormRequest
             'joining_date.required' => 'Joining date is required.',
             'department_id.required' => 'Department is required.',
             'department_id.exists' => 'Select a valid department.',
+            'profile_image.image' => 'The profile image must be an image file.',
+            'profile_image.mimes' => 'The profile image must be a file of type: jpg, jpeg, png.',
+            'profile_image.max' => 'The profile image may not be greater than 2MB.',
         ];
     }
 }

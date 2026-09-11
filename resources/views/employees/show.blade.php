@@ -12,6 +12,9 @@
                 </a>
             </div>
             <div class="d-flex gap-2">
+                <a href="{{ route('employees.attendance', $employee) }}" class="btn btn-outline-success">
+                    <i class="bi bi-calendar-check me-1"></i> Attendance History
+                </a>
                 <a href="{{ route('employees.edit', $employee) }}" class="btn btn-outline-primary">
                     <i class="bi bi-pencil-square me-1"></i> Edit Profile
                 </a>
@@ -25,9 +28,13 @@
         <div class="card card-custom mb-4 overflow-hidden">
             <div class="bg-primary p-4 text-white position-relative" style="background: linear-gradient(135deg, #4f46e5 0%, #1e1b4b 100%) !important;">
                 <div class="d-flex align-items-center">
-                    <div class="rounded-circle bg-white text-primary fw-bold d-flex align-items-center justify-content-center me-3 shadow" style="width: 64px; height: 64px; font-size: 1.5rem;">
-                        {{ strtoupper(substr($employee->name, 0, 1)) }}
-                    </div>
+                    @if ($employee->profile_image_url)
+                        <img src="{{ $employee->profile_image_url }}" alt="{{ $employee->name }}" class="rounded-circle border border-white border-2 shadow me-3" style="width: 64px; height: 64px; object-fit: cover;">
+                    @else
+                        <div class="rounded-circle bg-white text-primary fw-bold d-flex align-items-center justify-content-center me-3 shadow" style="width: 64px; height: 64px; font-size: 1.5rem;">
+                            {{ strtoupper(substr($employee->name, 0, 1)) }}
+                        </div>
+                    @endif
                     <div>
                         <h3 class="fw-bold mb-0 text-white">{{ $employee->name }}</h3>
                         <div class="opacity-75 fs-6">{{ $employee->designation ?? 'Employee' }} &bull; <span class="badge bg-light text-dark font-monospace">{{ $employee->employee_id }}</span></div>

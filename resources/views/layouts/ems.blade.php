@@ -222,8 +222,13 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('employees.*') ? 'active' : '' }}" href="{{ route('employees.index') }}">
+                        <a class="nav-link {{ request()->routeIs('employees.*') && !request()->routeIs('employees.attendance') ? 'active' : '' }}" href="{{ route('employees.index') }}">
                             <i class="bi bi-person-badge me-1"></i> Employees
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('attendances.*') || request()->routeIs('employees.attendance') ? 'active' : '' }}" href="{{ route('attendances.index') }}">
+                            <i class="bi bi-calendar-check me-1"></i> Attendance
                         </a>
                     </li>
                 </ul>

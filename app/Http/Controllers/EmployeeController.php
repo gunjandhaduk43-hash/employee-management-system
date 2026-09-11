@@ -7,6 +7,7 @@ use App\Models\Department;
 use App\Models\Employee;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class EmployeeController extends Controller
@@ -45,7 +46,13 @@ class EmployeeController extends Controller
 
     public function store(EmployeeRequest $request): RedirectResponse
     {
-        Employee::create($request->validated());
+        $data = $request->validated();
+
+        if ($request->hasFile('profile_image')) {
+            $data['profile_image'] = $request->file('profile_image')->store('employees', 'public');
+        }
+
+        Employee::create($data);
 
         return redirect()
             ->route('employees.index')
@@ -69,7 +76,16 @@ class EmployeeController extends Controller
 
     public function update(EmployeeRequest $request, Employee $employee): RedirectResponse
     {
-        $employee->update($request->validated());
+        $data = $request->validated();
+
+        if ($request->hasFile('profile_image')) {
+            if ($employee->profile_image && Storage::disk('public')->exists($employee->profile_image)) {
+                Storage::disk('public')->delete($employee->profile_image);
+            }
+            $data['profile_image'] = $request->file('profile_image')->store('employees', 'public');
+        }
+
+        $employee->update($data);
 
         return redirect()
             ->route('employees.index')
@@ -78,6 +94,14 @@ class EmployeeController extends Controller
 
     public function destroy(Employee $employee): RedirectResponse
     {
+        if ($employee->attendances()->exists()) {
+            return back()->with('error', 'This employee cannot be deleted because attendance records are associated with them.');
+        }
+
+        if ($employee->profile_image && Storage::disk('public')->exists($employee->profile_image)) {
+            Storage::disk('public')->delete($employee->profile_image);
+        }
+
         $employee->delete();
 
         return redirect()

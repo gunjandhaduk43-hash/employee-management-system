@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\EmployeeController;
@@ -13,7 +14,9 @@ Route::get('/', function () {
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('departments', DepartmentController::class);
+    Route::get('/employees/{employee}/attendance', [AttendanceController::class, 'employeeHistory'])->name('employees.attendance');
     Route::resource('employees', EmployeeController::class);
+    Route::resource('attendances', AttendanceController::class)->except(['show']);
 });
 
 Route::middleware('auth')->group(function () {

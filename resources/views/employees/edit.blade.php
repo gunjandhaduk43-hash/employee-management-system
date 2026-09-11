@@ -14,7 +14,7 @@
 
         <div class="card card-custom">
             <div class="card-body p-4">
-                <form action="{{ route('employees.update', $employee) }}" method="POST">
+                <form action="{{ route('employees.update', $employee) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
 
@@ -89,6 +89,40 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
+                        </div>
+                    </div>
+
+                    <h5 class="fw-bold text-primary mb-3 pb-2 border-bottom">
+                        <i class="bi bi-camera me-1"></i> Profile Photo
+                    </h5>
+
+                    <div class="row g-3 mb-4 align-items-center">
+                        <div class="col-md-3 text-center text-md-start">
+                            @if ($employee->profile_image_url)
+                                <img src="{{ $employee->profile_image_url }}"
+                                     alt="{{ $employee->name }}"
+                                     class="rounded-circle shadow-sm border"
+                                     style="width: 72px; height: 72px; object-fit: cover;">
+                                <div class="small text-muted mt-1">Current Photo</div>
+                            @else
+                                <div class="rounded-circle bg-primary-subtle text-primary fw-bold d-inline-flex align-items-center justify-content-center shadow-sm"
+                                     style="width: 72px; height: 72px; font-size: 1.5rem;">
+                                    {{ strtoupper(substr($employee->name, 0, 1)) }}
+                                </div>
+                                <div class="small text-muted mt-1">Default Avatar</div>
+                            @endif
+                        </div>
+                        <div class="col-md-9">
+                            <label for="profile_image" class="form-label fw-semibold">Change Photo</label>
+                            <input type="file"
+                                   name="profile_image"
+                                   id="profile_image"
+                                   class="form-control @error('profile_image') is-invalid @enderror"
+                                   accept="image/png, image/jpeg, image/jpg">
+                            <div class="form-text">Upload to replace existing photo. Formats: JPG, JPEG, PNG (Max: 2MB).</div>
+                            @error('profile_image')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
 

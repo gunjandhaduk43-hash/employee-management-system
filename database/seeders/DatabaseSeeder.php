@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Attendance;
 use App\Models\Department;
 use App\Models\Employee;
 use App\Models\User;
@@ -44,6 +45,8 @@ class DatabaseSeeder extends Seeder
             'Finance & Accounting',
             'Marketing & Sales',
             'Operations & Logistics',
+            'IT Support',
+            'Design',
         ];
 
         $deptModels = [];
@@ -51,7 +54,7 @@ class DatabaseSeeder extends Seeder
             $deptModels[$name] = Department::firstOrCreate(['name' => $name]);
         }
 
-        // 4. Seed Realistic Employees
+        // 4. Seed Realistic Employees matching user reference design
         $sampleEmployees = [
             [
                 'employee_id' => 'EMP-1001',
@@ -120,24 +123,109 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'employee_id' => 'EMP-1006',
-                'name' => 'Franklin Harris',
-                'email' => 'franklin.harris@example.com',
+                'name' => 'Frank Miller',
+                'email' => 'frank.miller@example.com',
                 'phone' => '+1-555-0106',
                 'address' => '987 Birch Lane, Chicago, IL',
                 'gender' => 'Male',
                 'date_of_birth' => '1987-12-05',
                 'joining_date' => '2019-04-20',
                 'salary' => 82000.00,
-                'designation' => 'Supply Chain Coordinator',
+                'designation' => 'Systems Administrator',
+                'department_id' => $deptModels['IT Support']->id,
+            ],
+            [
+                'employee_id' => 'EMP-1007',
+                'name' => 'Grace Wilson',
+                'email' => 'grace.wilson@example.com',
+                'phone' => '+1-555-0107',
+                'address' => '555 Sunset Blvd, Los Angeles, CA',
+                'gender' => 'Female',
+                'date_of_birth' => '1996-03-22',
+                'joining_date' => '2023-08-01',
+                'salary' => 85000.00,
+                'designation' => 'Product Designer',
+                'department_id' => $deptModels['Design']->id,
+            ],
+            [
+                'employee_id' => 'EMP-1008',
+                'name' => 'Henry Brown',
+                'email' => 'henry.brown@example.com',
+                'phone' => '+1-555-0108',
+                'address' => '777 Harbor View, Boston, MA',
+                'gender' => 'Male',
+                'date_of_birth' => '1991-09-18',
+                'joining_date' => '2021-10-15',
+                'salary' => 75000.00,
+                'designation' => 'Operations Lead',
                 'department_id' => $deptModels['Operations & Logistics']->id,
             ],
         ];
 
+        $createdEmployees = [];
         foreach ($sampleEmployees as $emp) {
-            Employee::firstOrCreate(
+            $createdEmployees[$emp['employee_id']] = Employee::updateOrCreate(
                 ['employee_id' => $emp['employee_id']],
                 $emp
             );
+        }
+
+        // 5. Seed Attendance Records for Today
+        // Note: EMP-1006 (Frank), EMP-1007 (Grace), EMP-1008 (Henry) have NO record -> Pending!
+        $today = now()->toDateString();
+        $sampleTodayAttendances = [
+            [
+                'employee_id' => $createdEmployees['EMP-1001']->id,
+                'attendance_date' => $today,
+                'status' => 'Present',
+                'check_in' => '09:00:00',
+                'check_out' => '17:30:00',
+                'remarks' => 'Regular day',
+            ],
+            [
+                'employee_id' => $createdEmployees['EMP-1002']->id,
+                'attendance_date' => $today,
+                'status' => 'Present',
+                'check_in' => '08:45:00',
+                'check_out' => '17:15:00',
+                'remarks' => 'On-time arrival',
+            ],
+            [
+                'employee_id' => $createdEmployees['EMP-1003']->id,
+                'attendance_date' => $today,
+                'status' => 'Half Day',
+                'check_in' => '09:00:00',
+                'check_out' => '13:00:00',
+                'remarks' => 'Doctor appointment',
+            ],
+            [
+                'employee_id' => $createdEmployees['EMP-1004']->id,
+                'attendance_date' => $today,
+                'status' => 'Absent',
+                'check_in' => null,
+                'check_out' => null,
+                'remarks' => 'Unexcused absence',
+            ],
+            [
+                'employee_id' => $createdEmployees['EMP-1005']->id,
+                'attendance_date' => $today,
+                'status' => 'Leave',
+                'check_in' => null,
+                'check_out' => null,
+                'remarks' => 'Annual approved leave',
+            ],
+        ];
+
+        foreach ($sampleTodayAttendances as $att) {
+            $existing = Attendance::where('employee_id', $att['employee_id'])
+                ->whereDate('attendance_date', $att['attendance_date'])
+                ->first();
+
+            if ($existing) {
+                $existing->update($att);
+            } else {
+                Attendance::create($att);
+            }
         }
     }
 }

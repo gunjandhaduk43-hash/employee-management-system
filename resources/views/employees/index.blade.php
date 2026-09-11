@@ -68,7 +68,7 @@
                         <th>Designation</th>
                         <th>Contact</th>
                         <th>Joining Date</th>
-                        <th class="text-end" style="width: 160px;">Actions</th>
+                        <th class="text-end" style="width: 190px;">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -81,9 +81,13 @@
                             </td>
                             <td>
                                 <div class="d-flex align-items-center">
-                                    <div class="rounded-circle bg-primary-subtle text-primary fw-bold d-flex align-items-center justify-content-center me-2" style="width: 36px; height: 36px; font-size: 0.85rem;">
-                                        {{ strtoupper(substr($employee->name, 0, 1)) }}
-                                    </div>
+                                    @if ($employee->profile_image_url)
+                                        <img src="{{ $employee->profile_image_url }}" alt="{{ $employee->name }}" class="rounded-circle shadow-sm me-2" style="width: 38px; height: 38px; object-fit: cover;">
+                                    @else
+                                        <div class="rounded-circle bg-primary-subtle text-primary fw-bold d-flex align-items-center justify-content-center me-2" style="width: 38px; height: 38px; font-size: 0.85rem;">
+                                            {{ strtoupper(substr($employee->name, 0, 1)) }}
+                                        </div>
+                                    @endif
                                     <div>
                                         <a href="{{ route('employees.show', $employee) }}" class="fw-bold text-dark text-decoration-none">
                                             {{ $employee->name }}
@@ -110,6 +114,9 @@
                                 <span class="small">{{ \Carbon\Carbon::parse($employee->joining_date)->format('M d, Y') }}</span>
                             </td>
                             <td class="text-end">
+                                <a href="{{ route('employees.attendance', $employee) }}" class="btn btn-sm btn-light border text-primary" title="Attendance History">
+                                    <i class="bi bi-calendar-check"></i>
+                                </a>
                                 <a href="{{ route('employees.show', $employee) }}" class="btn btn-sm btn-light border" title="View Details">
                                     <i class="bi bi-eye"></i>
                                 </a>
